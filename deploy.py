@@ -33,22 +33,10 @@ def create_lambda_function(name: str, zip_path: str, role_arn: str, handler: str
     with open(zip_path, "rb") as f:
         zipped_code = f.read()
 
-    # Environment variables for the Lambda function
-    env_vars = {
-        "STATE_MACHINE_NAME": STATE_MACHINE_NAME,
-        "AWS_ACCOUNT_ID": AWS_ACCOUNT_ID
-    }
-
     try:
         lambda_client.get_function(FunctionName=name)
         logger.info(f"✅ Lambda function {name} already exists. Updating code...")
         response = lambda_client.update_function_code(FunctionName=name, ZipFile=zipped_code)
-
-        # Update environment variables
-        lambda_client.update_function_configuration(
-            FunctionName=name,
-            Environment={"Variables": env_vars}
-        )
     except lambda_client.exceptions.ResourceNotFoundException:
         logger.info(f"🚀 Creating new Lambda function {name}...")
         response = lambda_client.create_function(
@@ -58,7 +46,11 @@ def create_lambda_function(name: str, zip_path: str, role_arn: str, handler: str
             Handler=handler,
             Code={"ZipFile": zipped_code},
             Timeout=10,
-            Environment={"Variables": env_vars},
+            Environment={"Variables": {
+                    "STATE_MACHINE_NAME": STATE_MACHINE_NAME,
+                    "AWS_ACCOUNT_ID": AWS_ACCOUNT_ID,
+                }
+            },
         )
 
     return str(response["FunctionArn"])
