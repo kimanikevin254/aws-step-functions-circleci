@@ -39,53 +39,53 @@ This project demonstrates how to deploy and manage Python-based AWS Step Functio
 
 ## Prerequisites
 
-- Python 3.12
-- AWS CLI configured with appropriate credentials
-- UV package manager
+-   Python 3.12
+-   AWS CLI configured with appropriate credentials
+-   UV package manager
 
 ## Setup
 
 1. Clone the repository:
 
-   ```bash
-   git clone https://github.com/benitomartin/aws-step-functions-circleci.git
-   cd aws-step-functions-circleci
-   ```
+    ```bash
+    git clone https://github.com/kimanikevin254/aws-step-functions-circleci.git
+    cd aws-step-functions-circleci
+    ```
 
 1. Install dependencies and activate virtual environment:
 
-   ```bash
-   uv sync --all-groups
-   source .venv/bin/activate
-   ```
+    ```bash
+    uv sync --all-groups
+    source .venv/bin/activate
+    ```
 
 1. Create and configure `.env` file based on `.env.example`:
 
-   ```bash
-   cp .env.example .env
-   # Edit .env with your AWS configuration
-   ```
+    ```bash
+    cp .env.example .env
+    # Edit .env with your AWS configuration
+    ```
 
 1. Create an S3 bucket for document processing and update `.env`:
 
-   ```bash
-   aws s3api create-bucket \
-      --bucket step-functions-$(uuidgen | tr -d - | tr '[:upper:]' '[:lower:]' ) \
-      --region <your_aws_region> \
-      --create-bucket-configuration LocationConstraint=<your_aws_region>
-   ```
+    ```bash
+    aws s3api create-bucket \
+       --bucket step-functions-$(uuidgen | tr -d - | tr '[:upper:]' '[:lower:]' ) \
+       --region <your_aws_region> \
+       --create-bucket-configuration LocationConstraint=<your_aws_region>
+    ```
 
 ## Development
 
 ### Available Make Commands
 
-- `make create-roles`: Create required IAM roles
-- `make zip-lambdas`: Package Lambda functions
-- `make deploy`: Deploy the Step Functions state machine
-- `make test`: Run the test suite
-- `make ruff`: Run Ruff linter
-- `make mypy`: Run MyPy static type checker
-- `make clean`: Clean up cached files
+-   `make create-roles`: Create required IAM roles
+-   `make zip-lambdas`: Package Lambda functions
+-   `make deploy`: Deploy the Step Functions state machine
+-   `make test`: Run the test suite
+-   `make ruff`: Run Ruff linter
+-   `make mypy`: Run MyPy static type checker
+-   `make clean`: Clean up cached files
 
 ### Testing
 
@@ -99,21 +99,21 @@ make test
 
 1. Create necessary IAM roles:
 
-   ```bash
-   make create-roles
-   ```
+    ```bash
+    make create-roles
+    ```
 
 1. Package Lambda functions:
 
-   ```bash
-   make zip-lambdas
-   ```
+    ```bash
+    make zip-lambdas
+    ```
 
 1. Deploy the solution:
 
-   ```bash
-   make deploy
-   ```
+    ```bash
+    make deploy
+    ```
 
 ## Architecture
 
@@ -121,33 +121,33 @@ The solution consists of three Lambda functions:
 
 1. **S3 Trigger** (`app_s3_trigger.py`):
 
-   - Triggered by S3 file uploads
-   - Initiates Step Functions execution
+    - Triggered by S3 file uploads
+    - Initiates Step Functions execution
 
 1. **Task One** (`app_task_one.py`):
 
-   - Extracts metadata from uploaded files
-   - Processes file information
+    - Extracts metadata from uploaded files
+    - Processes file information
 
 1. **Task Two** (`app_task_two.py`):
 
-   - Classifies documents based on file type
-   - Handles different document formats
+    - Classifies documents based on file type
+    - Handles different document formats
 
 ## Configuration
 
 Main dependencies:
 
-- `boto3`: AWS SDK for Python
-- `loguru`: Logging utility
-- `python-dotenv`: Environment variable management
+-   `boto3`: AWS SDK for Python
+-   `loguru`: Logging utility
+-   `python-dotenv`: Environment variable management
 
 Development dependencies:
 
-- `mypy`: Static type checking
-- `pytest`: Testing framework
-- `ruff`: Python linter
-- `pre-commit`: Git hooks for code quality
+-   `mypy`: Static type checking
+-   `pytest`: Testing framework
+-   `ruff`: Python linter
+-   `pre-commit`: Git hooks for code quality
 
 ## License
 
