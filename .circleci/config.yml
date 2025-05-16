@@ -1,0 +1,64 @@
+version: 2.1
+
+orbs:
+  aws-cli: circleci/aws-cli@5.3.1
+
+jobs:
+  build-deploy:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+
+      - run:
+          name: Install UV
+          command: |
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+      - run:
+          name: Create venv and install dependencies
+          command: |
+            uv sync --all-groups
+      - run:
+          name: Create .env file
+          command: |
+            echo "AWS_REGION=${AWS_REGION}" > .env
+            echo "AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID}" >> .env
+            echo "S3_BUCKET_NAME=${S3_BUCKET_NAME}" >> .env
+            echo "STATE_MACHINE_NAME=${STATE_MACHINE_NAME}" >> .env
+            echo "SF_ROLE_NAME=${SF_ROLE_NAME}" >> .env
+            echo "LAMBDA_FOLDER=${LAMBDA_FOLDER}" >> .env
+            echo "LAMBDA_ROLE_NAME=${LAMBDA_ROLE_NAME}" >> .env
+            echo "LAMBDA_FUNCTION_ONE=${LAMBDA_FUNCTION_ONE}" >> .env
+            echo "LAMBDA_FUNCTION_TWO=${LAMBDA_FUNCTION_TWO}" >> .env
+            echo "LAMBDA_FUNCTION_S3_TRIGGER=${LAMBDA_FUNCTION_S3_TRIGGER}" >> .env
+      - run:
+          name: Run ruff
+          command: |
+            uv run ruff check . --fix --exit-non-zero-on-fix
+      - run:
+          name: Run MyPy
+          command: |
+            uv run mypy
+      - run:
+          name: Run tests
+          command: |
+            uv run pytest
+      - aws-cli/setup:
+          profile_name: default
+
+      - run:
+          name: Create Roles
+          command: |
+            ./scripts/create_roles.sh
+      - run:
+          name: Zip Lambda functions
+          command: |
+            ./scripts/zip_lambdas.sh
+      - run:
+          name: Deploy
+          command: |
+            uv run deploy.py
+workflows:
+  deploy:
+    jobs:
+      - build-deploy

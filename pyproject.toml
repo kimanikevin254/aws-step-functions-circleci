@@ -1,0 +1,128 @@
+[project]
+name = "aws-step-functions-circleci"
+version = "0.1.0"
+description = "Deploying Python-based AWS Step Functions with CircleCI, using Lambda functions"
+readme = "README.md"
+authors = [
+    { name = "Benito Martin"},
+]
+license = { file = "LICENSE" }
+requires-python = ">=3.12"
+dependencies = [
+    "boto3>=1.38.3",
+    "loguru>=0.7.3",
+    "python-dotenv>=1.1.0",
+]
+
+[dependency-groups]
+ci = [
+    "mypy>=1.15.0",
+    "pytest>=8.3.5",
+    "ruff>=0.11.7",
+]
+
+dev = [
+    "pre-commit>=4.2.0",
+]
+
+######################################
+# --- Build System Configuration --- #
+######################################
+
+# Build system
+
+[build-system]
+build-backend = "hatchling.build"
+
+requires = [ "hatchling" ]
+
+[tool.hatch.build.targets.wheel]
+packages = [ "aws_lambdas" ]
+
+######################################
+# --- Linting & Formatting Tools --- #
+######################################
+
+[tool.ruff]
+# Assume Python 3.12
+target-version = "py312"
+
+# Same as Black.
+line-length = 120
+indent-width = 4
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+  ".bzr",
+  ".direnv",
+  ".eggs",
+  ".git",
+  ".git-rewrite",
+  ".hg",
+  ".mypy_cache",
+  ".nox",
+  ".pants.d",
+  ".pytype",
+  ".ruff_cache",
+  ".svn",
+  ".tox",
+  ".venv",
+  "__pypackages__",
+  "_build",
+  "buck-out",
+  "build",
+  "dist",
+  "node_modules",
+  "venv",
+]
+
+# Whether to show an enumeration of all fixed lint violations
+show-fixes = true
+
+# Enable common lint rules.
+lint.select = [
+  "B",    # flake8-bugbear
+  "E",    # pycodestyle
+  "F",    # Pyflakes
+  "I",    # isort
+  "SIM",  # similarity
+  "UP",   # pyupgrade
+]
+lint.ignore = []
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+lint.fixable = ["ALL"]
+lint.unfixable = []
+
+[tool.ruff.lint.mccabe]
+# Maximum allowed McCabe complexity.
+max-complexity = 10
+
+
+#########################
+# --- Static Typing --- #
+#########################
+
+[tool.mypy]
+# Mypy configuration.
+files = ["aws_lambdas"]
+ignore_missing_imports = false
+disallow_untyped_defs = true
+check_untyped_defs = true
+warn_redundant_casts = true
+warn_unused_ignores = false
+warn_return_any = true
+strict_optional = true
+
+#########################
+# --- Testing Tools --- #
+#########################
+
+[tool.pytest.ini_options]
+testpaths = [ "tests" ]
+python_files = [ "test_*.py" ]
+addopts = "-ra -v -s"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning"
+]
